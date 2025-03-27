@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestor de Datos de Personas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center">Personas</h1>
+        
+        <form id="personForm" class="space-y-4">
+            <div>
+                <label class="block mb-2">Nombre:</label>
+                <input type="text" id="firstName" required class="w-full p-2 border rounded">
+            </div>
+            
+            <div>
+                <label class="block mb-2">Apellido:</label>
+                <input type="text" id="lastName" required class="w-full p-2 border rounded">
+            </div>
+            
+            <div>
+                <label class="block mb-2">DNI:</label>
+                <input type="text" id="dni" required class="w-full p-2 border rounded">
+            </div>
+            
+            <div>
+                <label class="block mb-2">Teléfonos:</label>
+                <div id="phoneContainer" class="space-y-2">
+                    <div class="flex">
+                        <input type="text" class="phoneInput w-full p-2 border rounded mr-2">
+                        <button 
+                            type="button" 
+                            onclick="addPhoneInput()" 
+                            title="Agregar otro numero"
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">
+                Agregar Persona
+            </button>
+        </form>
+        
+        <div id="personList" class="mt-6 space-y-4"></div>
+    </div>
+
+    <script>
+        const persons = [];
+
+        function addPhoneInput() {
+            const container = document.getElementById('phoneContainer');
+            const newDiv = document.createElement('div');
+            newDiv.className = 'flex';
+            newDiv.innerHTML = `
+                <input type="text" class="phoneInput w-full p-2 border rounded mr-2">
+                <button 
+                    type="button" 
+                    onclick="this.parentElement.remove()" 
+                    title="Eliminar numero"
+                    class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                    -
+                </button>
+            `;
+            container.appendChild(newDiv);
+        }
+
+        document.getElementById('personForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const dni = document.getElementById('dni').value;
+            
+            const phoneInputs = document.querySelectorAll('.phoneInput');
+            const phoneNumbers = Array.from(phoneInputs)
+                .map(input => input.value)
+                .filter(phone => phone.trim() !== '');
+            
+            const personEntry = [
+                firstName, 
+                lastName, 
+                dni, 
+                phoneNumbers
+            ];
+
+            persons.push(personEntry);
+            
+            const personList = document.getElementById('personList');
+            personList.innerHTML = persons.map((person, index) => `
+                <div class="bg-gray-50 p-4 rounded">
+                    <h3 class="font-bold">Persona ${index + 1}</h3>
+                    <p><strong>Nombre:</strong> ${person[0]}</p>
+                    <p><strong>Apellido:</strong> ${person[1]}</p>
+                    <p><strong>DNI:</strong> ${person[2]}</p>
+                    <p><strong>Teléfonos:</strong> ${person[3].join(', ')}</p>
+                </div>
+            `).join('');
+            
+            // Reset form
+            document.getElementById('personForm').reset();
+            document.getElementById('phoneContainer').innerHTML = `
+                <div class="flex">
+                    <input type="text" class="phoneInput w-full p-2 border rounded mr-2">
+                    <button 
+                        type="button" 
+                        onclick="addPhoneInput()" 
+                        title="Agregar otro numero"
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                        +
+                    </button>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
